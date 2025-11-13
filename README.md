@@ -35,15 +35,15 @@ Observações:
 
 As classes que vamos usar fazem parte de um sistema de video-locadora, para aluguel de vídeos.
 
-Inicialmente, são três classes: `Movie` (filmes que podem ser alugados), `Rental` (dados de um aluguel) e `Customer` (clientes da locadora).
+Inicialmente, são três classes: `src.Movie` (filmes que podem ser alugados), `Rental` (dados de um aluguel) e `Customer` (clientes da locadora).
 
 Se estiver usando o repl.it, já disponibilizamos esse código inicial pronto: veja [aqui](https://replit.com/@engsoftmoderna/VideoStore).
 
 Se não estiver usando repl.it siga os passos a seguir na sua IDE ou editor favoritos.
 
-* Copie o código da classe `Movie` para um arquivo chamado `Movie.java`:
+* Copie o código da classe `src.Movie` para um arquivo chamado `src.Movie.java`:
 ```java
-public class Movie {
+public class src.Movie {
 
   public static final int  CHILDRENS = 2;
   public static final int  REGULAR = 0;
@@ -52,7 +52,7 @@ public class Movie {
   private String _title;
   private int _priceCode;
 
-  public Movie(String title, int priceCode) {
+  public src.Movie(String title, int priceCode) {
       _title = title;
       _priceCode = priceCode;
   }
@@ -74,92 +74,96 @@ public class Movie {
 * Copie o código da classe `Rental` para um arquivo chamado `Rental.java`:
 
 ```java
+import src.Movie;
+
 public class Rental {
 
-   private Movie _movie;
-   private int _daysRented;
+    private Movie _movie;
+    private int _daysRented;
 
-   public Rental(Movie movie, int daysRented) {
-      _movie = movie;
-      _daysRented = daysRented;
-   }
+    public Rental(Movie movie, int daysRented) {
+        _movie = movie;
+        _daysRented = daysRented;
+    }
 
-   public int getDaysRented() {
-      return _daysRented;
-   }
+    public int getDaysRented() {
+        return _daysRented;
+    }
 
-   public Movie getMovie() {
-      return _movie;
-   }
+    public Movie getMovie() {
+        return _movie;
+    }
 }
 ```
 
 * Copie o código da classe `Customer` para um arquivo chamado `Customer.java`:
 
 ```java
+import src.Movie;
+
 import java.util.Enumeration;
 import java.util.Vector;
 
 public class Customer {
-   private String _name;
-   private Vector _rentals = new Vector();
+    private String _name;
+    private Vector _rentals = new Vector();
 
-   public Customer (String name){
-      _name = name;
-   }
+    public Customer(String name) {
+        _name = name;
+    }
 
-   public void addRental(Rental arg) {
-      _rentals.addElement(arg);
-   }
-   
-   public String getName (){
-      return _name;
-   }
-  
-  public String statement() {
-     double totalAmount = 0;
-     int frequentRenterPoints = 0;
-     Enumeration rentals = _rentals.elements();
-     String result = "Rental Record for " + getName() + "\n";
-     while (rentals.hasMoreElements()) {
-        double thisAmount = 0;
-        Rental each = (Rental) rentals.nextElement();
+    public void addRental(Rental arg) {
+        _rentals.addElement(arg);
+    }
 
-        //determine amounts for each line
-        switch (each.getMovie().getPriceCode()) {
-           case Movie.REGULAR:
-              thisAmount += 2;
-              if (each.getDaysRented() > 2)
-                 thisAmount += (each.getDaysRented() - 2) * 1.5;
-              break;
-           case Movie.NEW_RELEASE:
-              thisAmount += each.getDaysRented() * 3;
-              break;
-           case Movie.CHILDRENS:
-              thisAmount += 1.5;
-              if (each.getDaysRented() > 3)
-                 thisAmount += (each.getDaysRented() - 3) * 1.5;
-               break;
+    public String getName() {
+        return _name;
+    }
+
+    public String statement() {
+        double totalAmount = 0;
+        int frequentRenterPoints = 0;
+        Enumeration rentals = _rentals.elements();
+        String result = "Rental Record for " + getName() + "\n";
+        while (rentals.hasMoreElements()) {
+            double thisAmount = 0;
+            Rental each = (Rental) rentals.nextElement();
+
+            //determine amounts for each line
+            switch (each.getMovie().getPriceCode()) {
+                case Movie.REGULAR:
+                    thisAmount += 2;
+                    if (each.getDaysRented() > 2)
+                        thisAmount += (each.getDaysRented() - 2) * 1.5;
+                    break;
+                case Movie.NEW_RELEASE:
+                    thisAmount += each.getDaysRented() * 3;
+                    break;
+                case Movie.CHILDRENS:
+                    thisAmount += 1.5;
+                    if (each.getDaysRented() > 3)
+                        thisAmount += (each.getDaysRented() - 3) * 1.5;
+                    break;
+            }
+
+            // add frequent renter points
+            frequentRenterPoints++;
+            // add bonus for a two day new release rental
+            if ((each.getMovie().getPriceCode() == Movie.NEW_RELEASE) &&
+                    each.getDaysRented() > 1) frequentRenterPoints++;
+
+            //show figures for this rental
+            result += "\t" + each.getMovie().getTitle() + "\t" +
+                    String.valueOf(thisAmount) + "\n";
+            totalAmount += thisAmount;
+
         }
-
-        // add frequent renter points
-        frequentRenterPoints ++;
-        // add bonus for a two day new release rental
-        if ((each.getMovie().getPriceCode() == Movie.NEW_RELEASE) &&
-            each.getDaysRented() > 1) frequentRenterPoints ++;
-
-        //show figures for this rental
-        result += "\t" + each.getMovie().getTitle()+ "\t" +
-            String.valueOf(thisAmount) + "\n";
-        totalAmount += thisAmount;
-
-     }
-     //add footer lines
-     result +=  "Amount owed is " + String.valueOf(totalAmount) + "\n";
-     result += "You earned " + String.valueOf(frequentRenterPoints) +
-             " frequent renter points";
-     return result;
-   }
+        //add footer lines
+        result += "Amount owed is " + String.valueOf(totalAmount) + "\n";
+        result += "You earned " + String.valueOf(frequentRenterPoints) +
+                " frequent renter points";
+        return result;
+    }
 }
 ```
 
@@ -246,32 +250,34 @@ Verifique se existem erros de compilação no seu código.
 Esse refactoring substitui uma variável local e temporária (temp) por uma chamada de função (query). No caso, vamos **substituir** toda referência a `thisAmount` por uma chamada a `each.getCharge()`  em `Customer.statement()`. Veja o código após o refactoring:
 
 ```java
+import src.Movie;
+
 public String statement() {
-   double totalAmount = 0;
-   int frequentRenterPoints = 0;
-   Enumeration rentals = _rentals.elements();
-   String result = "Rental Record for " + getName() + "\n";
-   while (rentals.hasMoreElements()) {
-      Rental each = (Rental) rentals.nextElement();
+    double totalAmount = 0;
+    int frequentRenterPoints = 0;
+    Enumeration rentals = _rentals.elements();
+    String result = "Rental Record for " + getName() + "\n";
+    while (rentals.hasMoreElements()) {
+        Rental each = (Rental) rentals.nextElement();
 
-      // add frequent renter points
-      frequentRenterPoints ++;
-      // add bonus for a two day new release rental
-      if ((each.getMovie().getPriceCode() == Movie.NEW_RELEASE) &&
-         each.getDaysRented() > 1) frequentRenterPoints ++;
+        // add frequent renter points
+        frequentRenterPoints++;
+        // add bonus for a two day new release rental
+        if ((each.getMovie().getPriceCode() == Movie.NEW_RELEASE) &&
+                each.getDaysRented() > 1) frequentRenterPoints++;
 
-      // show figures for this rental
-      result += "\t" + each.getMovie().getTitle()+ "\t" + String.valueOf
-         (each.getCharge()) + "\n";
-      totalAmount += each.getCharge();
+        // show figures for this rental
+        result += "\t" + each.getMovie().getTitle() + "\t" + String.valueOf
+                (each.getCharge()) + "\n";
+        totalAmount += each.getCharge();
 
-   }
-   
-   // add footer lines
-   result +=  "Amount owed is " + String.valueOf(totalAmount) + "\n";
-   result += "You earned " + String.valueOf(frequentRenterPoints)
-              + " frequent renter points";
-   return result;
+    }
+
+    // add footer lines
+    result += "Amount owed is " + String.valueOf(totalAmount) + "\n";
+    result += "You earned " + String.valueOf(frequentRenterPoints)
+            + " frequent renter points";
+    return result;
 }
 ```
 
@@ -412,7 +418,7 @@ Nós vamos realizar este refactoring em sete passos.
 
 ## Passo 1: Extract and Move Method
 
-* Primeiro, não faz sentido ter um switch que depende de um atributo (`_priceCode`) de uma outra classe (`Movie`). Logo, você deve **extrair e mover** o código de `getCharge()` na classe Rental para um método chamado `getCharge(int daysRented)` na classe Movie.
+* Primeiro, não faz sentido ter um switch que depende de um atributo (`_priceCode`) de uma outra classe (`src.Movie`). Logo, você deve **extrair e mover** o código de `getCharge()` na classe Rental para um método chamado `getCharge(int daysRented)` na classe src.Movie.
 
 * O método antigo agora apenas inclui uma chamada para o método novo: 
 
@@ -424,7 +430,7 @@ class Rental ...
 ```
 
 ```java 
-class Movie ...
+class src.Movie ...
    public double getCharge(int daysRented){
        //Adicionar o trecho de código extraído.
    }
@@ -436,7 +442,7 @@ Verifique se existem erros de compilação no seu código.
 
 ## Passo 2: Extract and Move Method
 
-* Vamos agora também **extrair** o código de `getFrequentRenterPoints()`  para `getFrequentRenterPoints(int daysRented)` e **movê-lo** para a classe `Movie`; ou seja, é melhor que métodos que usam informações sobre tipos de filme estejam todos na classe `Movie`.
+* Vamos agora também **extrair** o código de `getFrequentRenterPoints()`  para `getFrequentRenterPoints(int daysRented)` e **movê-lo** para a classe `src.Movie`; ou seja, é melhor que métodos que usam informações sobre tipos de filme estejam todos na classe `src.Movie`.
 
 * O método antigo agora apenas inclui uma chamada para o método novo: 
 
@@ -449,7 +455,7 @@ class Rental ...
 ```
 
 ```java 
-class Movie ...
+class src.Movie ...
    public int getFrequentRenterPoints(int daysRented){
        //Adicionar o trecho de código extraído.
    }
@@ -479,34 +485,40 @@ public abstract class Price {
 * Copie o código da classe `ChildrensPrice` para um arquivo chamado `ChildrensPrice.java`:
 
 ```java  
+import src.Movie;
+
 public class ChildrensPrice extends Price {
-   public int getPriceCode() {
-       return Movie.CHILDRENS;
-   }
+    public int getPriceCode() {
+        return Movie.CHILDRENS;
+    }
 }
 ```
 
 * Copie o código da classe `NewReleasePrice` para um arquivo chamado `NewReleasePrice.java`:
 
 ```java
+import src.Movie;
+
 public class NewReleasePrice extends Price {
-   public int getPriceCode() {
-       return Movie.NEW_RELEASE;
-   }
+    public int getPriceCode() {
+        return Movie.NEW_RELEASE;
+    }
 }
 ```
 
 * Finalmente, copie o código da classe `RegularPrice` para um arquivo chamado `RegularPrice.java`:
 
 ```java
+import src.Movie;
+
 public class RegularPrice extends Price {
-   public int getPriceCode() {
-       return Movie.REGULAR;
-   }
+    public int getPriceCode() {
+        return Movie.REGULAR;
+    }
 }
 ```
 
-Agora, em `Movie`, vamos:
+Agora, em `src.Movie`, vamos:
 * remover o campo `_priceCode`
 * criar um campo `_price` do tipo `Price`
 * alterar o construtor, para chamar `_price.setPriceCode`
@@ -514,11 +526,11 @@ Agora, em `Movie`, vamos:
 * remover o campo `_priceCode`, criar um campo `_price` do tipo `Price`, alterar o construtor, e atualizar os métodos `getPriceCode` e `setPriceCode`:
 
 ```java
-class Movie...
+class src.Movie...
 
    private Price _price;
 
-   public Movie(String name, int priceCode) {
+   public src.Movie(String name, int priceCode) {
       _title = name;
       setPriceCode(priceCode);
    }
@@ -551,12 +563,12 @@ Verifique se existem erros de compilação no seu código.
 
 ## Passo 4: Extract and Move Method
 
-* Mais um refactoring, agora você precisa  **extrair e mover** `getCharge(int)` da classe `Movie` para `getCharge(int)` na classe `Price`.
+* Mais um refactoring, agora você precisa  **extrair e mover** `getCharge(int)` da classe `src.Movie` para `getCharge(int)` na classe `Price`.
 
 * O método antigo agora apenas inclui uma chamada para o método novo: 
 
 ```java
-class Movie ...
+class src.Movie ...
    public double getCharge(int daysRented) {
          return _price.getCharge(daysRented);
    }
@@ -616,12 +628,12 @@ Verifique se existem erros de compilação no seu código.
 
 ## Passo 6: Extract and Move Method 
 
-* E agora vamos fazer algo bem parecido com o método `getFrequentRenterPoints(int)`. Para isso, como um primeiro passo, ainda intermediário, você precisa **extrair e mover** o código de `getFrequentRenterPoints(int)` da classe `Movie` para o método `getFrequentRenterPoints(int)` em `Price`.
+* E agora vamos fazer algo bem parecido com o método `getFrequentRenterPoints(int)`. Para isso, como um primeiro passo, ainda intermediário, você precisa **extrair e mover** o código de `getFrequentRenterPoints(int)` da classe `src.Movie` para o método `getFrequentRenterPoints(int)` em `Price`.
 
 * O método antigo agora apenas inclui uma chamada para o método novo: 
 
 ```java
-class Movie ...
+class src.Movie ...
    public int getFrequentRenterPoints(int daysRented) {
       return _price.getFrequentRenterPoints(daysRented);
    }
